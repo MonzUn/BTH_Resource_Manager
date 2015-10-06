@@ -12,7 +12,7 @@ public:
 	{
 		if (ifile.is_open())
 			ifile.close();
-		ifile.open(fileDir, std::ios::in | std::ios::binary | std::ios::ate);
+		ifile.open(fileDir, std::ios::in | std::ios::binary);
 		return ifile.is_open();
 	}
 
@@ -20,12 +20,6 @@ public:
 	{
 		file.close();
 		ifile.close();
-	}
-
-	char * ReadBytesFromFile()
-	{
-		std::ifstream::pos_type size = ifile.tellg();
-		return ReadBytesFromFile((int)size);
 	}
 
 	char * ReadBytesFromFile(int bytes)

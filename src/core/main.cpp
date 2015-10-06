@@ -30,11 +30,5 @@ int main()
 
 		importer.CloseFile();
 	}
-	if (importer.OpenFileForRead("totem.mesh"))
-	{
-		char* data = importer.ReadBytesFromFile();
-		delete data;
-		importer.CloseFile();
-	}
 	return 0;
 }
