@@ -22,11 +22,11 @@ public:
 		ifile.close();
 	}
 
-	char * ReadBytesFromFile(size_t bytes)
+	char * ReadBytesFromFile(int bytes)
 	{
+		if (bytes < 0) return NULL;
 		char *chars = new char[bytes];
-		if (bytes > 0)
-			ifile.read((char*)&chars[0], bytes);
+		ifile.read((char*)&chars[0], bytes);
 		std::cout << "Importing " << bytes << " bytes.\n"; // TEMP
 		return chars;
 	}
