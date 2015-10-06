@@ -17,8 +17,6 @@ int main()
 		float* bitan = (float*)(importer.ReadBytesFromFile(*n));
 		n = (int*)(importer.ReadBytesFromFile(sizeof(int)));
 		float* tex = (float*)(importer.ReadBytesFromFile(*n));
-		n = (int*)(importer.ReadBytesFromFile(sizeof(int)));
-		float* kex = (float*)(importer.ReadBytesFromFile(*n));
 
 		delete n;
 		delete pos;
@@ -26,7 +24,13 @@ int main()
 		delete tan;
 		delete bitan;
 		delete tex;
-		delete kex;
+
+		importer.CloseFile();
+	}
+	if (importer.OpenFileForRead("totem.mesh"))
+	{
+		float* data = (float*)(importer.ReadBytesFromFile());
+		delete data;
 
 		importer.CloseFile();
 	}

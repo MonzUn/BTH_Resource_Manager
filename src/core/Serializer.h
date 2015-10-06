@@ -21,7 +21,14 @@ public:
 		file.close();
 		ifile.close();
 	}
-
+	char * ReadBytesFromFile()
+	{
+		// get size of file
+		ifile.seekg(0, ifile.end);
+		long size = (long)ifile.tellg();
+		ifile.seekg(0);
+		return ReadBytesFromFile(size);
+	}
 	char * ReadBytesFromFile(int bytes)
 	{
 		if (bytes < 0) return NULL;
