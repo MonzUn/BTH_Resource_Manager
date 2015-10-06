@@ -1,0 +1,33 @@
+#pragma once
+
+#include <vector>
+#include <fstream>
+#include <iostream> // TEMP
+
+class Serializer {
+public:
+	std::fstream file;
+	std::ifstream ifile;
+	bool OpenFileForRead(const char* fileDir)
+	{
+		if (ifile.is_open())
+			ifile.close();
+		ifile.open(fileDir, std::ios::in | std::ios::binary);
+		return ifile.is_open();
+	}
+
+	void CloseFile()
+	{
+		file.close();
+		ifile.close();
+	}
+
+	char * ReadBytesFromFile(size_t bytes)
+	{
+		char *chars = new char[bytes];
+		if (bytes > 0)
+			ifile.read((char*)&chars[0], bytes);
+		std::cout << "Importing " << bytes << " bytes.\n"; // TEMP
+		return chars;
+	}
+};
