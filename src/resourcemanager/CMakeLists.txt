@@ -3,6 +3,13 @@ file(GLOB_RECURSE ResourceManagerSources
 	"*.cpp"
 )
 
+set(RESOURCEMANAGER_LIBRARIES
+	SDL2
+	SDL2main
+	glew32
+	glu32
+	opengl32)
+
 # Generate source groups depending on folders (creates Visual Studio filters)
 set(RELPATH ${ProjectRoot}/src/resourcemanager)
 get_filename_component(RELPATH ${RELPATH} ABSOLUTE)
@@ -18,8 +25,14 @@ foreach(f ${ResourceManagerSources})
     source_group("${SRCGR}" FILES ${f})
 endforeach()
 
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../../externals/include")
+link_directories("${CMAKE_CURRENT_SOURCE_DIR}/../../externals/lib/x64")
+
 add_definitions(-DMEMORYALLOCATOR_DLL_EXPORT)
 add_library(ResourceManager SHARED ${ResourceManagerSources})
+
+target_link_libraries(ResourceManager
+					  ${RESOURCEMANAGER_LIBRARIES})
 
 install(
 	TARGETS ResourceManager DESTINATION lib

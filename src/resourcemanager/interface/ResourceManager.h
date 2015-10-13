@@ -1,15 +1,22 @@
 #pragma once
 
-#ifdef _WIN32
-#ifdef RESOURCEMANAGER_DLL_EXPORT
-#define RESOURCEMANAGER_API __declspec(dllexport)
-#else
-#define RESOURCEMANAGER_API __declspec(dllimport)
-#endif
-#else
-#define RESOURCEMANAGER_API
-#endif
+#include "../core/ResourceManagerLibraryDefine.h"
+#include "../core/GLThreadPool.h"
 
-class RESOURCEMANAGER_API ResourceManager
+#include <GLEW/glew.h>
+#include <vector>
+
+class ResourceManager
 {
+private:
+    GLThreadPool mThreadPool;
+
+    std::mutex mGlLock;
+
+public:
+    RESOURCEMANAGER_API void StartUp( SDL_Window* window );
+    RESOURCEMANAGER_API void ShutDown();
+
+    RESOURCEMANAGER_API std::future<GLuint> LoadTexture( const char* filepath );
+    RESOURCEMANAGER_API std::future<void> DeleteTexture( GLuint texture );
 };
