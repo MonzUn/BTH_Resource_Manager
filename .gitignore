@@ -46,3 +46,6 @@ proj/x64
 proj/CMakeCache.txt
 proj/CMakeFiles/
 *.cmake
+
+#custom file formats
+*.paca
