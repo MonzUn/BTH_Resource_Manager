@@ -8,7 +8,9 @@ set(RESOURCEMANAGER_LIBRARIES
 	SDL2main
 	glew32
 	glu32
-	opengl32)
+	opengl32
+	zdll
+	zzip)
 
 # Generate source groups depending on folders (creates Visual Studio filters)
 set(RELPATH ${ProjectRoot}/src/resourcemanager)
