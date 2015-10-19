@@ -1,10 +1,12 @@
-#include "Serializer.h"
 #include <algorithm>
 #include <iostream>
 #include <string>
+#include "Serializer.h"
+#include "PacaWriter.h"
 
 void PrintHelp();
 void ReadMesh();
+void WritePaca();
 
 int main()
 {
@@ -23,6 +25,9 @@ int main()
 
 		if ( input == "mesh" || input == "m" )
 			ReadMesh();
+
+		if ( input == "pacaWrite" || input == "pw" )
+			WritePaca();
 	}
 	return 0;
 }
@@ -62,11 +67,22 @@ void ReadMesh()
 	}
 }
 
+void WritePaca()
+{
+	std::cout << "Input starting directory;";
+	std::string startingDirectory;
+	std::cin >> startingDirectory;
+
+	PacaWriter writer;
+	writer.WritePaca( startingDirectory.c_str() );
+}
+
 void PrintHelp()
 {
 	std::cout << "The following commands are supported\n\n";
 
 	std::cout << "- Read .mesh (mesh)\n";
+	std::cout << "- Write .paca file (pw)\n";
 
 	std::cout << "\n";
 }
