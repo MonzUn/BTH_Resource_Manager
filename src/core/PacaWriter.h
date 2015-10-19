@@ -5,7 +5,7 @@
 class PacaWriter
 {
 public:
-	void WritePaca( const char* startingDirectory );
+	void WritePaca( const std::string& startingDirectory );
 
 private:
 };

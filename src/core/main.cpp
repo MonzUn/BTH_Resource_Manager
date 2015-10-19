@@ -74,7 +74,7 @@ void WritePaca()
 	std::cin >> startingDirectory;
 
 	PacaWriter writer;
-	writer.WritePaca( startingDirectory.c_str() );
+	writer.WritePaca( startingDirectory );
 }
 
 void PrintHelp()
