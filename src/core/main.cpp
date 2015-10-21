@@ -74,7 +74,7 @@ void ReadMesh()
 
 void WritePaca()
 {
-	std::cout << "Input starting directory";
+	std::cout << "Input starting directory\n";
 	std::string startingDirectory;
 	std::cin >> startingDirectory;
 
@@ -84,12 +84,26 @@ void WritePaca()
 
 void ReadPaca()
 {
-	std::cout << "Input paca file path";
+	std::cout << "Input paca file path\n";
 	std::string pacaFilePath;
 	std::cin >> pacaFilePath;
 
 	PacaReader reader;
 	reader.Open( pacaFilePath );
+
+	std::cout << "Input resource path\n";
+	std::string resourcePath;
+	std::cin >> resourcePath;
+
+	unsigned int resourceSize = reader.GetResourceSize( resourcePath );
+	char* resourceData = static_cast<char*>( malloc( resourceSize ) );
+	if ( reader.GetResource( resourcePath, resourceData, resourceSize ) )
+		std::cout << std::string( resourceData );
+	else
+		std::cout << "Failed to read resource " << resourcePath << std::endl;
+
+	free( resourceData );
+
 	reader.Close();
 }
 
