@@ -32,7 +32,7 @@ GLuint LoadTextureTask::operator()(const char* filepath, std::mutex* mutex)
 	zzip_dir_close(dir);
 	//unsigned char* imageData = stbi_load_from_file( file, &width, &height, &elementCount, 0 );
 	unsigned char* imageData = stbi_load_from_memory(buf, len, &width, &height, &elementCount, 0);
-
+	delete[] buf;
 	//fclose( file );
 	//}
 	GLuint texture;
