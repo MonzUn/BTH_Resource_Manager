@@ -3,10 +3,12 @@
 #include <string>
 #include "Serializer.h"
 #include "PacaWriter.h"
+#include "PacaReader.h"
 
 void PrintHelp();
 void ReadMesh();
 void WritePaca();
+void ReadPaca();
 
 int main()
 {
@@ -28,6 +30,9 @@ int main()
 
 		if ( input == "pacaWrite" || input == "pw" )
 			WritePaca();
+
+		if ( input == "pacaRead" || input == "pr" )
+			ReadPaca();
 	}
 	return 0;
 }
@@ -69,12 +74,37 @@ void ReadMesh()
 
 void WritePaca()
 {
-	std::cout << "Input starting directory;";
+	std::cout << "Input starting directory\n";
 	std::string startingDirectory;
 	std::cin >> startingDirectory;
 
 	PacaWriter writer;
 	writer.WritePaca( startingDirectory );
+}
+
+void ReadPaca()
+{
+	std::cout << "Input paca file path\n";
+	std::string pacaFilePath;
+	std::cin >> pacaFilePath;
+
+	PacaReader reader;
+	reader.Open( pacaFilePath );
+
+	std::cout << "Input resource path\n";
+	std::string resourcePath;
+	std::cin >> resourcePath;
+
+	unsigned int resourceSize = reader.GetResourceSize( resourcePath );
+	char* resourceData = static_cast<char*>( malloc( resourceSize ) );
+	if ( reader.GetResource( resourcePath, resourceData, resourceSize ) )
+		std::cout << std::string( resourceData );
+	else
+		std::cout << "Failed to read resource " << resourcePath << std::endl;
+
+	free( resourceData );
+
+	reader.Close();
 }
 
 void PrintHelp()
@@ -83,6 +113,7 @@ void PrintHelp()
 
 	std::cout << "- Read .mesh (mesh)\n";
 	std::cout << "- Write .paca file (pw)\n";
+	std::cout << "- Read .paca file (pr)\n";
 
 	std::cout << "\n";
 }
