@@ -9,7 +9,7 @@ struct LoadTextureTask
 {
     // We obviously don't want to load the texture directly from file later on,
     // but this will do for now
-    RESOURCEMANAGER_API GLuint operator()( const char* filepath, std::mutex* mutex );
+    RESOURCEMANAGER_API GLuint operator()( unsigned char* buf, unsigned int bufSize, std::mutex* mutex );
 };
 
 struct DeleteTextureTask

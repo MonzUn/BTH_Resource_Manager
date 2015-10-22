@@ -1,40 +1,17 @@
 #include "TextureTask.h"
 
-#include <zzip/zzip.h>
-
 #include <stdio.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-GLuint LoadTextureTask::operator()(const char* filepath, std::mutex* mutex)
+GLuint LoadTextureTask::operator()(unsigned char* buf, unsigned int bufSize, std::mutex* mutex)
 {
 	std::lock_guard<std::mutex> lock(*mutex);
 
-	//FILE* file;
-	//if ( fopen_s( &file, filepath, "rb" ) != 0 )
-	//    return 0;
-	ZZIP_DIR* dir = zzip_dir_open("../assets/dip.zip", 0);
-	//if (dir) {
-	zzip_ssize_t len;
-
 	int width, height, elementCount;
 
-	ZZIP_FILE* fp = zzip_file_open(dir, filepath + 10, 0);
-	unsigned char *buf;
-	zzip_seek(fp, 0, SEEK_END);
-	len = zzip_tell(fp);
-	zzip_rewind(fp);
+	unsigned char* imageData = stbi_load_from_memory(buf, bufSize, &width, &height, &elementCount, 0);
 
-	buf = new unsigned char[len];
-	len = zzip_file_read(fp, buf, len);
-
-	zzip_file_close(fp);
-	zzip_dir_close(dir);
-	//unsigned char* imageData = stbi_load_from_file( file, &width, &height, &elementCount, 0 );
-	unsigned char* imageData = stbi_load_from_memory(buf, len, &width, &height, &elementCount, 0);
-	delete[] buf;
-	//fclose( file );
-	//}
 	GLuint texture;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
