@@ -11,6 +11,7 @@ GLuint LoadTextureTask::operator()(unsigned char* buf, unsigned int bufSize, std
 	int width, height, elementCount;
 
 	unsigned char* imageData = stbi_load_from_memory(buf, bufSize, &width, &height, &elementCount, 0);
+	delete[] buf;
 
 	GLuint texture;
 	glGenTextures(1, &texture);
