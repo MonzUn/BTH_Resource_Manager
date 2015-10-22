@@ -1,6 +1,15 @@
 #ifndef MODELFILEPARSER_H
 #define MODELFILEPARSER_H
 
+struct Vector3
+{
+	float val[3];
+};
+struct Vector2
+{
+	float val[2];
+};
+
 class ModelFileParser
 {
 public:

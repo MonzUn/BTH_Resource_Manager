@@ -9,15 +9,6 @@
 using glm::vec2;
 using glm::vec3;
 
-struct Vector3
-{
-	float val[3];
-};
-struct Vector2
-{
-	float val[2];
-};
-
 //struct MeshMaterialData
 //{
 //	std::string Name;

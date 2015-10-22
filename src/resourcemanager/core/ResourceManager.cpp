@@ -56,7 +56,23 @@ ModelFileParser* ResourceManager::LoadModel(const char* file)
 	
 	zzip_file_close(fp);
 
-	ModelFileParser* mParser = new ObjParser();
+	ModelFileParser* mParser;
+	std::string fileString;
+	fileString = std::string(file);
+	if (fileString.substr(fileString.find_last_of(".") + 1) == "mesh")
+	{
+		mParser = new MeshParser();
+	}
+	else if (fileString.substr(fileString.find_last_of(".") + 1) == "obj")
+	{
+		mParser = new ObjParser();
+	}
+	else
+	{
+		delete[] buf;
+		return NULL;
+	}
+
 	mParser->Load(buf, len);
 	delete[] buf;
 

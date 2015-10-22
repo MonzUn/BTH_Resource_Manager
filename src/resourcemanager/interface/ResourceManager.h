@@ -3,6 +3,7 @@
 #include "../core/ResourceManagerLibraryDefine.h"
 #include "../core/GLThreadPool.h"
 #include "../core/ObjParser.h"
+#include "../core/MeshParser.h"
 
 #include <GLEW/glew.h>
 #include <vector>
