@@ -2,6 +2,7 @@
 
 #include "../core/ResourceManagerLibraryDefine.h"
 #include "../core/GLThreadPool.h"
+#include "../core/ObjParser.h"
 
 #include <GLEW/glew.h>
 #include <vector>
@@ -16,10 +17,14 @@ private:
     std::mutex mGlLock;
 
 	ZZIP_DIR* mDir;
+
 public:
     RESOURCEMANAGER_API void StartUp( SDL_Window* window );
     RESOURCEMANAGER_API void ShutDown();
 
     RESOURCEMANAGER_API std::future<GLuint> LoadTexture( const char* filepath );
     RESOURCEMANAGER_API std::future<void> DeleteTexture( GLuint texture );
+
+	RESOURCEMANAGER_API ModelFileParser* LoadModel(const char* file);
+	RESOURCEMANAGER_API void FreeModelData(ModelFileParser* parser);
 };
