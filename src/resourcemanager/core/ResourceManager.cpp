@@ -2,37 +2,76 @@
 #include "../core/TextureTask.h"
 #include <zzip/zzip.h>
 
-void ResourceManager::StartUp( SDL_Window* window )
+bool ResourceManager::StartUp( SDL_Window* window, const std::string& assetFilePath )
 {
+	std::string assetFileExtension = assetFilePath.substr( assetFilePath.find_last_of( '.' ) );
+	if ( assetFileExtension == ".paca" )
+		mAssetPacketExtension = AssetPacketExtension::PACA;
+	else if ( assetFileExtension == ".zip" )
+		mAssetPacketExtension = AssetPacketExtension::ZIP;
+	else
+		return false;
+
     mThreadPool.Create( 4, window );
 
-	mDir = zzip_dir_open("../assets/dip.zip", 0);
+	switch ( mAssetPacketExtension )
+	{
+		case PACA:
+			mPacaReader.Open( assetFilePath );
+		break;
+
+		case ZIP:
+			mDir = zzip_dir_open( assetFilePath.c_str(), 0 );
+		break;
+	}
 	
+	return true;
 }
 
 void ResourceManager::ShutDown()
 {
-	zzip_dir_close(mDir);
+	switch ( mAssetPacketExtension )
+	{
+		case PACA:
+			mPacaReader.Close();
+		break;
+
+		case ZIP:
+			zzip_dir_close( mDir );
+		break;
+	}
 
     mThreadPool.Destroy();
 }
 
 std::future<GLuint> ResourceManager::LoadTexture( const char* filepath )
 {	
-	zzip_ssize_t len;
+	unsigned int bufferSize;
+	unsigned char* buffer;
+	switch ( mAssetPacketExtension )
+	{
+		case PACA:
+			bufferSize	= mPacaReader.GetResourceSize( filepath );
+			buffer		= new unsigned char[bufferSize];
+			if ( mPacaReader.GetResource( filepath, buffer, bufferSize ) )
+			{
+				return mThreadPool.AddTask<LoadTextureTask>( buffer, bufferSize, &mGlLock );
+			}
+			break;
 
-	ZZIP_FILE* fp = zzip_file_open(mDir, filepath + 10, 0);
-	unsigned char *buf;
-	zzip_seek(fp, 0, SEEK_END);
-	len = zzip_tell(fp);
-	zzip_rewind(fp);
+		case ZIP:
+			ZZIP_FILE* fp = zzip_file_open( mDir, filepath + 10, 0 );
+			zzip_seek( fp, 0, SEEK_END );
+			bufferSize = zzip_tell( fp );
+			zzip_rewind( fp );
 
-	buf = new unsigned char[len];
-	len = zzip_file_read(fp, buf, len);
+			buffer = new unsigned char[bufferSize];
+			bufferSize = zzip_file_read( fp, buffer, static_cast<int>( bufferSize ) );
 
-	zzip_file_close(fp);
+			zzip_file_close( fp );
 
-    return mThreadPool.AddTask<LoadTextureTask>( buf, len, &mGlLock );
+			return mThreadPool.AddTask<LoadTextureTask>( buffer, bufferSize, &mGlLock );
+	}
 }
 
 std::future<void> ResourceManager::DeleteTexture( GLuint texture )
@@ -42,19 +81,35 @@ std::future<void> ResourceManager::DeleteTexture( GLuint texture )
 
 ModelFileParser* ResourceManager::LoadModel(const char* file)
 {
+	unsigned int bufferSize;
+	char* buffer;
 
-	zzip_ssize_t len;
+	switch ( mAssetPacketExtension )
+	{
+		case PACA:
+		{
+			bufferSize	= mPacaReader.GetResourceSize( file );
+			buffer		= new char[bufferSize];
+			if ( !mPacaReader.GetResource( file, buffer, bufferSize ) )
+				return nullptr;
+			break;
+		}
+		break;
 
-	ZZIP_FILE* fp = zzip_file_open(mDir, file, 0);
-	char *buf;
-	zzip_seek(fp, 0, SEEK_END);
-	len = zzip_tell(fp);
-	zzip_rewind(fp);
+		case ZIP:
+		{
+			ZZIP_FILE* fp = zzip_file_open( mDir, file, 0 );
+			zzip_seek( fp, 0, SEEK_END );
+			bufferSize = zzip_tell( fp );
+			zzip_rewind( fp );
 
-	buf = new char[len];
-	len = zzip_file_read(fp, buf, len);
-	
-	zzip_file_close(fp);
+			buffer = new char[bufferSize];
+			bufferSize = zzip_file_read( fp, buffer, bufferSize );
+
+			zzip_file_close( fp );
+		}
+		break;
+	}
 
 	ModelFileParser* mParser;
 	std::string fileString;
@@ -69,12 +124,12 @@ ModelFileParser* ResourceManager::LoadModel(const char* file)
 	}
 	else
 	{
-		delete[] buf;
+		delete[] buffer;
 		return NULL;
 	}
 
-	mParser->Load(buf, len);
-	delete[] buf;
+	mParser->Load(buffer, bufferSize);
+	delete[] buffer;
 
 	return mParser;
 }

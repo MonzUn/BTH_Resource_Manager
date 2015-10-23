@@ -9,6 +9,13 @@
 #include <vector>
 
 #include <zzip/zzip.h>
+#include "../../resourcemanager/Core/PacaReader.h"
+
+enum AssetPacketExtension
+{
+	PACA,
+	ZIP
+};
 
 class ResourceManager
 {
@@ -19,8 +26,12 @@ private:
 
 	ZZIP_DIR* mDir;
 
+	PacaReader mPacaReader;
+
+	AssetPacketExtension mAssetPacketExtension;
+
 public:
-    RESOURCEMANAGER_API void StartUp( SDL_Window* window );
+    RESOURCEMANAGER_API bool StartUp( SDL_Window* window, const std::string& assetFilePath );
     RESOURCEMANAGER_API void ShutDown();
 
     RESOURCEMANAGER_API std::future<GLuint> LoadTexture( const char* filepath );

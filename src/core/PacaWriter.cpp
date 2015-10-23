@@ -1,10 +1,11 @@
 #include "PacaWriter.h"
 #include <vector>
 #include <cassert>
-#include "PlatformDefinitions.h"
-#include "FileUtility.h"
+#include <iostream>
+#include "../resourcemanager/core/PlatformDefinitions.h"
+#include "../resourcemanager/core/FileUtility.h"
 
-void PacaWriter::WritePaca( const std::string& startingDirectory )
+unsigned int PacaWriter::WritePaca( const std::string& startingDirectory )
 {
 	std::vector<std::string> filePaths;
 	std::vector<std::string> subfolderPaths;
@@ -26,7 +27,7 @@ void PacaWriter::WritePaca( const std::string& startingDirectory )
 			}
 			else // It's a resource
 			{
-				if ( contentPaths[i].find( ".paca" ) == std::string::npos ) // Don't store .paca in .paca
+				if ( contentPaths[i].find( ".paca" ) == std::string::npos && contentPaths[i].find( ".zip" ) == std::string::npos ) // Don't store .paca and .zip in .paca
 					filePaths.push_back( directoryToSearch + contentPaths[i] );
 			}
 		}
@@ -72,6 +73,8 @@ void PacaWriter::WritePaca( const std::string& startingDirectory )
 		unsigned int hash = hashFunction( filePaths[i] );
 		memcpy( walker, &hash, sizeof( unsigned int ) );
 		walker += sizeof( unsigned int );
+
+		std::cout << "Writing " << filePaths[i] << " (Hash = " << hash << ")\n";
 	}
 
 	// Write all sizes
@@ -100,4 +103,6 @@ void PacaWriter::WritePaca( const std::string& startingDirectory )
 	free( buffer );
 	for ( int i = 0; i < fileContents.size(); ++i )
 		free( fileContents[i] );
+
+	return objectCount;
 }

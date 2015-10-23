@@ -3,7 +3,7 @@
 #include <string>
 #include "Serializer.h"
 #include "PacaWriter.h"
-#include "PacaReader.h"
+#include "../resourcemanager/core/PacaReader.h"
 
 void PrintHelp();
 void ReadMesh();
@@ -25,14 +25,19 @@ int main()
 		if ( input == "quit" || input == "exit" || input == "q" )
 			quit = true;
 
-		if ( input == "mesh" || input == "m" )
+		else if ( input == "mesh" || input == "m" )
 			ReadMesh();
 
-		if ( input == "pacaWrite" || input == "pw" )
+		else if ( input == "pacaWrite" || input == "pw" )
 			WritePaca();
 
-		if ( input == "pacaRead" || input == "pr" )
+		else if ( input == "pacaRead" || input == "pr" )
 			ReadPaca();
+		else
+		{
+			std::cout << "Invalid input, please try again.\n";
+			PrintHelp;
+		}
 	}
 	return 0;
 }
@@ -79,7 +84,9 @@ void WritePaca()
 	std::cin >> startingDirectory;
 
 	PacaWriter writer;
-	writer.WritePaca( startingDirectory );
+	unsigned int objectCount = writer.WritePaca( startingDirectory );
+
+	std::cout << objectCount << " objects written to .paca at " << startingDirectory << std::endl;
 }
 
 void ReadPaca()
