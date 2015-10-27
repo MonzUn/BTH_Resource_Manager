@@ -113,7 +113,7 @@ ModelFileParser* ResourceManager::LoadModel(const char* file)
 
 		case ZIP:
 		{
-			ZZIP_FILE* fp = zzip_file_open( mDir, file + 10, 0 );
+			ZZIP_FILE* fp = zzip_file_open( mDir, file, 0 );
 			zzip_seek( fp, 0, SEEK_END );
 			bufferSize = zzip_tell( fp );
 			zzip_rewind( fp );
