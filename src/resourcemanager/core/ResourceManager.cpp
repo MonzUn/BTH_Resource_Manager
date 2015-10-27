@@ -12,7 +12,7 @@ bool ResourceManager::StartUp( SDL_Window* window, const std::string& assetFileP
 	else
 		return false;
 
-    mThreadPool.Create( 2, window );
+    mThreadPool.Create( 8, window );
 
 	switch ( mAssetPacketExtension )
 	{
