@@ -28,7 +28,12 @@ foreach(f ${ResourceManagerSources})
 endforeach()
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../../externals/include")
-link_directories("${CMAKE_CURRENT_SOURCE_DIR}/../../externals/lib/x64")
+
+if(${CMAKE_GENERATOR} STREQUAL "Visual Studio 14 2015 Win64")
+	link_directories("${CMAKE_CURRENT_SOURCE_DIR}/../../externals/lib/x64")
+elseif(${CMAKE_GENERATOR} STREQUAL "Visual Studio 14 2015")
+	link_directories("${CMAKE_CURRENT_SOURCE_DIR}/../../externals/lib/x86")
+endif()
 
 add_definitions(-DMEMORYALLOCATOR_DLL_EXPORT)
 add_library(ResourceManager SHARED ${ResourceManagerSources})
