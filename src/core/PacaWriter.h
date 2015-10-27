@@ -5,5 +5,5 @@
 class PacaWriter
 {
 public:
-	unsigned int WritePaca( const std::string& startingDirectory );
+	uint32_t WritePaca( const std::string& startingDirectory );
 };

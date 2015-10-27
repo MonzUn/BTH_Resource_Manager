@@ -2,10 +2,11 @@
 #include <vector>
 #include <cassert>
 #include <iostream>
+#include <stdint.h>
 #include "../resourcemanager/core/PlatformDefinitions.h"
 #include "../resourcemanager/core/FileUtility.h"
 
-unsigned int PacaWriter::WritePaca( const std::string& startingDirectory )
+uint32_t PacaWriter::WritePaca( const std::string& startingDirectory )
 {
 	std::vector<std::string> filePaths;
 	std::vector<std::string> subfolderPaths;
@@ -34,13 +35,13 @@ unsigned int PacaWriter::WritePaca( const std::string& startingDirectory )
 		
 	} while ( !subfolderPaths.empty() );
 
-	unsigned int dataTotalByteSize = 0;
+	uint32_t dataTotalByteSize = 0;
 
 	// Find all fileLengths
-	std::vector<unsigned int> fileLengths;
+	std::vector<uint32_t> fileLengths;
 	for ( int i = 0; i < filePaths.size(); ++i )
 	{
-		unsigned int fileByteSize = FileUtility::GetFileContentSize( filePaths[i], std::ios::binary );
+		uint32_t fileByteSize = FileUtility::GetFileContentSize( filePaths[i], std::ios::binary );
 		fileLengths.push_back( fileByteSize );
 		dataTotalByteSize += fileByteSize;
 	}
@@ -54,25 +55,25 @@ unsigned int PacaWriter::WritePaca( const std::string& startingDirectory )
 		fileContents.push_back( fileContent );
 	}
 
-	unsigned int headerByteSize = filePaths.size() * sizeof( unsigned int ) * 2; // One hash and one length variable for each entry
-	unsigned int totalByteSize	= sizeof( unsigned int ) + headerByteSize + dataTotalByteSize;
+	uint32_t headerByteSize = filePaths.size() * sizeof( uint32_t ) * 2; // One hash and one length variable for each entry
+	uint32_t totalByteSize	= sizeof( uint32_t ) + headerByteSize + dataTotalByteSize;
 
 	// Create the output buffer
 	char* buffer = static_cast<char*>( malloc( totalByteSize ) );
 	char* walker = buffer;
 
 	// Write the number of objects in the file
-	unsigned int objectCount = filePaths.size();
-	memcpy( walker, &objectCount, sizeof( sizeof( unsigned int ) ) );
-	walker += sizeof( unsigned int );
+	uint32_t objectCount = filePaths.size();
+	memcpy( walker, &objectCount, sizeof( sizeof( uint32_t ) ) );
+	walker += sizeof( uint32_t );
 
 	// Write all hashes
 	std::hash<std::string> hashFunction;
 	for ( int i = 0; i < filePaths.size(); ++i )
 	{
-		unsigned int hash = hashFunction( filePaths[i] );
-		memcpy( walker, &hash, sizeof( unsigned int ) );
-		walker += sizeof( unsigned int );
+		uint32_t hash = hashFunction( filePaths[i] );
+		memcpy( walker, &hash, sizeof( uint32_t ) );
+		walker += sizeof( uint32_t );
 
 		std::cout << "Writing " << filePaths[i] << " (Hash = " << hash << ")\n";
 	}
@@ -80,8 +81,8 @@ unsigned int PacaWriter::WritePaca( const std::string& startingDirectory )
 	// Write all sizes
 	for ( int i = 0; i < filePaths.size(); ++i )
 	{
-		memcpy( walker, &fileLengths[i], sizeof( unsigned int ) );
-		walker += sizeof( unsigned int );
+		memcpy( walker, &fileLengths[i], sizeof( uint32_t ) );
+		walker += sizeof( uint32_t );
 	}
 
 	// Write all the data
