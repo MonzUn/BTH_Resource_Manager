@@ -6,8 +6,6 @@
 
 GLuint LoadTextureTask::operator()(unsigned char* buf, unsigned int bufSize, std::mutex* mutex)
 {
-	std::lock_guard<std::mutex> lock(*mutex);
-
 	int width, height, elementCount;
 
 	unsigned char* imageData = stbi_load_from_memory(buf, bufSize, &width, &height, &elementCount, 0);
@@ -34,6 +32,8 @@ GLuint LoadTextureTask::operator()(unsigned char* buf, unsigned int bufSize, std
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	stbi_image_free(imageData);
+
+    std::lock_guard<std::mutex> lock( *mutex );
 
 	GLsync fenceId = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 	while (glClientWaitSync(fenceId, GL_SYNC_FLUSH_COMMANDS_BIT, GLuint64(5000000000)) == GL_TIMEOUT_EXPIRED) {}
