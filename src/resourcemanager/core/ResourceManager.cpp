@@ -55,6 +55,7 @@ std::future<GLuint> ResourceManager::LoadTexture( const char* filepath )
 {	
 	unsigned int bufferSize;
 	unsigned char* buffer;
+
 	switch ( mAssetPacketExtension )
 	{
 		case PACA:
@@ -67,7 +68,7 @@ std::future<GLuint> ResourceManager::LoadTexture( const char* filepath )
 			break;
 
 		case ZIP:
-			ZZIP_FILE* fp = zzip_file_open( mDir, filepath + 10, 0 );
+			ZZIP_FILE* fp = zzip_file_open( mDir, filepath, 0 );
 			zzip_seek( fp, 0, SEEK_END );
 			bufferSize = zzip_tell( fp );
 			zzip_rewind( fp );
@@ -113,7 +114,7 @@ ModelFileParser* ResourceManager::LoadModel(const char* file)
 
 		case ZIP:
 		{
-			ZZIP_FILE* fp = zzip_file_open( mDir, file + 10, 0 );
+			ZZIP_FILE* fp = zzip_file_open( mDir, file, 0 );
 			zzip_seek( fp, 0, SEEK_END );
 			bufferSize = zzip_tell( fp );
 			zzip_rewind( fp );
