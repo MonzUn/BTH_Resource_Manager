@@ -71,6 +71,9 @@ uint32_t PacaWriter::WritePaca( const std::string& startingDirectory )
 	std::hash<std::string> hashFunction;
 	for ( int i = 0; i < filePaths.size(); ++i )
 	{
+		if ( filePaths[i].find_first_of( '.' ) != std::string::npos )
+			filePaths[i].erase( 0, 3 ); // Remove everything except the actual path
+
 		uint32_t hash = hashFunction( filePaths[i] );
 		memcpy( walker, &hash, sizeof( uint32_t ) );
 		walker += sizeof( uint32_t );
