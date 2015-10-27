@@ -11,6 +11,8 @@
 #include <zzip/zzip.h>
 #include "../../resourcemanager/Core/PacaReader.h"
 
+#define _CACH_PARSED_DATA_
+
 enum AssetPacketExtension
 {
 	PACA,
@@ -29,6 +31,10 @@ private:
 	PacaReader mPacaReader;
 
 	AssetPacketExtension mAssetPacketExtension;
+
+	// maps
+	std::map<const char*, ModelFileParser*> mModelFileParsers;
+	//std::map<const char*, Buffer*> m_meshs;
 
 public:
     RESOURCEMANAGER_API bool StartUp( SDL_Window* window, const std::string& assetFilePath );

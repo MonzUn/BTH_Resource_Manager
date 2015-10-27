@@ -30,6 +30,13 @@ bool ResourceManager::StartUp( SDL_Window* window, const std::string& assetFileP
 
 void ResourceManager::ShutDown()
 {
+#ifdef _CACH_PARSED_DATA_
+	for (std::map<const char*, ModelFileParser*>::iterator it = mModelFileParsers.begin(); it != mModelFileParsers.end(); it++)
+	{
+		delete it->second;
+	}
+#endif
+
 	switch ( mAssetPacketExtension )
 	{
 		case PACA:
@@ -81,6 +88,14 @@ std::future<void> ResourceManager::DeleteTexture( GLuint texture )
 
 ModelFileParser* ResourceManager::LoadModel(const char* file)
 {
+#ifdef _CACH_PARSED_DATA_
+	for (std::map<const char*, ModelFileParser*>::iterator it = mModelFileParsers.begin(); it != mModelFileParsers.end(); it++)
+	{
+		if (it->first == file)
+			return it->second;
+	}
+#endif
+
 	unsigned int bufferSize;
 	char* buffer;
 
@@ -98,7 +113,7 @@ ModelFileParser* ResourceManager::LoadModel(const char* file)
 
 		case ZIP:
 		{
-			ZZIP_FILE* fp = zzip_file_open( mDir, file, 0 );
+			ZZIP_FILE* fp = zzip_file_open( mDir, file + 10, 0 );
 			zzip_seek( fp, 0, SEEK_END );
 			bufferSize = zzip_tell( fp );
 			zzip_rewind( fp );
@@ -131,10 +146,25 @@ ModelFileParser* ResourceManager::LoadModel(const char* file)
 	mParser->Load(buffer, bufferSize);
 	delete[] buffer;
 
+#ifdef _CACH_PARSED_DATA_
+	mModelFileParsers.insert(std::pair<const char*, ModelFileParser*>(file, mParser));
+#endif
 	return mParser;
 }
 
 void ResourceManager::FreeModelData(ModelFileParser* parser)
 {
+#ifdef _CACH_PARSED_DATA_
+	for (std::map<const char*, ModelFileParser*>::iterator it = mModelFileParsers.begin(); it != mModelFileParsers.end(); it++)
+	{
+		if (it->second == parser)
+		{
+			delete parser;
+			mModelFileParsers.erase(it);
+			return;
+		}
+	}
+#else
 	delete parser;
+#endif
 }
