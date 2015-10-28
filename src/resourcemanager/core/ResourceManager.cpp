@@ -2,7 +2,7 @@
 #include "../core/TextureTask.h"
 #include <zzip/zzip.h>
 
-bool ResourceManager::StartUp( SDL_Window* window, const std::string& assetFilePath )
+bool ResourceManager::StartUp( SDL_Window* window, size_t threadCount, const std::string& assetFilePath )
 {
 	std::string assetFileExtension = assetFilePath.substr( assetFilePath.find_last_of( '.' ) );
 	if ( assetFileExtension == ".paca" )
@@ -12,7 +12,7 @@ bool ResourceManager::StartUp( SDL_Window* window, const std::string& assetFileP
 	else
 		return false;
 
-    mThreadPool.Create( 8, window );
+    mThreadPool.Create( threadCount, window );
 
 	switch ( mAssetPacketExtension )
 	{
