@@ -199,8 +199,16 @@ void ResourceManager::FreeModelData(ModelFileParser* parser)
 #endif
 }
 
-std::future<void*> ResourceManager::LoadSound(const char* filepath, void* _fSystem)
+SoundResource* ResourceManager::LoadSound(const char* filepath, void* _fSystem)
 {
+#ifdef _CACH_PARSED_DATA_
+	for (std::map<const char*, SoundResource*>::iterator it = mSoundResource.begin(); it != mSoundResource.end(); it++)
+	{
+		if (it->first == filepath)
+			return it->second;
+	}
+#endif
+
 	unsigned int bufferSize;
 	unsigned char* buffer;
 
@@ -211,7 +219,12 @@ std::future<void*> ResourceManager::LoadSound(const char* filepath, void* _fSyst
 		buffer = new unsigned char[bufferSize];
 		if (mPacaReader.GetResource(filepath, buffer, bufferSize))
 		{
-			return mThreadPool.AddTask<LoadSoundTask>(buffer, bufferSize, &mGlLock, _fSystem);
+			SoundResource* soundResource = new SoundResource();
+			soundResource->future = mThreadPool.AddTask<LoadSoundTask>(buffer, bufferSize, &mGlLock, _fSystem);
+#ifdef _CACH_PARSED_DATA_
+			mSoundResource.insert(std::pair<const char*, SoundResource*>(filepath, soundResource));
+#endif
+			return soundResource;
 		}
 		break;
 
@@ -226,7 +239,12 @@ std::future<void*> ResourceManager::LoadSound(const char* filepath, void* _fSyst
 
 		zzip_file_close(fp);
 
-		return mThreadPool.AddTask<LoadSoundTask>(buffer, bufferSize, &mGlLock, _fSystem);
+		SoundResource* soundResource = new SoundResource();
+		soundResource->future = mThreadPool.AddTask<LoadSoundTask>(buffer, bufferSize, &mGlLock, _fSystem);
+#ifdef _CACH_PARSED_DATA_
+		mSoundResource.insert(std::pair<const char*, SoundResource*>(filepath, soundResource));
+#endif
+		return soundResource;
 	}
 }
 void ResourceManager::addToMemCount(int bytes)
