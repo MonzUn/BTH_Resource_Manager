@@ -11,7 +11,7 @@
 #include <zzip/zzip.h>
 #include "../../resourcemanager/Core/PacaReader.h"
 
-//#define _CACH_PARSED_DATA_
+#define _CACH_PARSED_DATA_
 
 enum AssetPacketExtension
 {
