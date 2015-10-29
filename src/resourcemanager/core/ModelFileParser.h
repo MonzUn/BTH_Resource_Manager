@@ -13,6 +13,8 @@ struct Vector2
 class ModelFileParser
 {
 public:
+	int memory = 0;
+
 	ModelFileParser() {}
 	~ModelFileParser() {}
 

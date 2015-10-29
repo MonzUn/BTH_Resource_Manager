@@ -31,6 +31,14 @@ bool ObjParser::Load(char* buffer, unsigned int bufSize)
 		str = "";
 	}
 
+	memory += sizeof(vec3)*mPositions.size();
+	memory += sizeof(vec2)*mTexCoords.size();
+	memory += sizeof(vec3)*mNormals.size();
+
+	memory += sizeof(Vector3)*m_finalPositions.size();
+	memory += sizeof(Vector2)*m_finalTexCoords.size();
+	memory += sizeof(Vector3)*m_finalNormals.size();
+
 	return true;
 }
 
