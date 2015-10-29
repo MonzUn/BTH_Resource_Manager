@@ -11,7 +11,7 @@
 #include <zzip/zzip.h>
 #include "../../resourcemanager/Core/PacaReader.h"
 
-#define _CACH_PARSED_DATA_
+//#define _CACH_PARSED_DATA_
 
 enum AssetPacketExtension
 {
@@ -19,9 +19,34 @@ enum AssetPacketExtension
 	ZIP
 };
 
+struct TextureResource
+{
+private:
+	bool isLoaded = false;
+	GLuint texture = 0;
+public:
+	std::future<GLuint> future;
+	bool isReady()
+	{
+		if (isLoaded == true) return true;
+		if (future._Is_ready())
+		{
+			isLoaded = true;
+			texture = future.get();
+			assert(texture != 0);
+			return true;
+		}
+		return false;
+	}
+	GLuint get() { return texture; }
+};
+
 class ResourceManager
 {
 private:
+	int memory;
+	void addToMemCount(int bytes);
+
     GLThreadPool mThreadPool;
 
     std::mutex mGlLock;
@@ -34,13 +59,14 @@ private:
 
 	// maps
 	std::map<const char*, ModelFileParser*> mModelFileParsers;
+	std::map<const char*, TextureResource*> mTextureResource;
 	//std::map<const char*, Buffer*> m_meshs;
 
 public:
     RESOURCEMANAGER_API bool StartUp( SDL_Window* window, const std::string& assetFilePath );
     RESOURCEMANAGER_API void ShutDown();
 
-    RESOURCEMANAGER_API std::future<GLuint> LoadTexture( const char* filepath );
+    RESOURCEMANAGER_API TextureResource* LoadTexture( const char* filepath );
     RESOURCEMANAGER_API std::future<void> DeleteTexture( GLuint texture );
 
 	RESOURCEMANAGER_API ModelFileParser* LoadModel(const char* file);

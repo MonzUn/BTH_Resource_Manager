@@ -20,6 +20,8 @@ bool MeshParser::Load(char* buffer, unsigned int bufSize)
 	m_finalPositions = std::vector<Vector3>(size / sizeof(Vector3));
 	memcpy(&m_finalPositions[0], buffer, size);
 	buffer += size;
+	memory += size;
+
 
 	size = *buffer;
 	memcpy(&size, buffer, sizeof(int));
@@ -27,6 +29,7 @@ bool MeshParser::Load(char* buffer, unsigned int bufSize)
 	m_finalNormals = std::vector<Vector3>(size / sizeof(Vector3));
 	memcpy(&m_finalNormals[0], buffer, size);
 	buffer += size;
+	memory += size;
 
 	size = *buffer;
 	memcpy(&size, buffer, sizeof(int));
@@ -34,6 +37,7 @@ bool MeshParser::Load(char* buffer, unsigned int bufSize)
 	m_finalTangent = std::vector<Vector3>(size / sizeof(Vector3));
 	memcpy(&m_finalTangent[0], buffer, size);
 	buffer += size;
+	memory += size;
 
 	size = *buffer;
 	memcpy(&size, buffer, sizeof(int));
@@ -41,12 +45,14 @@ bool MeshParser::Load(char* buffer, unsigned int bufSize)
 	m_finalBiTangent = std::vector<Vector3>(size / sizeof(Vector3));
 	memcpy(&m_finalBiTangent[0], buffer, size);
 	buffer += size;
+	memory += size;
 
 	size = *buffer;
 	memcpy(&size, buffer, sizeof(int));
 	buffer += sizeof(int);
 	m_finalTexCoords = std::vector<Vector2>(size / sizeof(Vector2));
 	memcpy(&m_finalTexCoords[0], buffer, size);
+	memory += size;
 
 	return true;
 }
