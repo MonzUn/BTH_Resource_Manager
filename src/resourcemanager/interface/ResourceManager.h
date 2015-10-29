@@ -19,26 +19,10 @@ enum AssetPacketExtension
 	ZIP
 };
 
-struct SoundResource
+struct SoundData
 {
-private:
-	bool isLoaded = false;
-	void* sound = 0;
-public:
-	std::future<void*> future;
-	bool isReady()
-	{
-		if (isLoaded == true) return true;
-		if (future._Is_ready())
-		{
-			isLoaded = true;
-			sound = future.get();
-			assert(sound != 0);
-			return true;
-		}
-		return false;
-	}
-	void* get() { return sound; }
+	unsigned char* buffer = 0;
+	unsigned int bufferSize = 0;
 };
 
 struct TextureResource
@@ -82,7 +66,7 @@ private:
 	// maps
 	std::map<const char*, ModelFileParser*> mModelFileParsers;
 	std::map<const char*, TextureResource*> mTextureResource;
-	std::map<const char*, SoundResource*> mSoundResource;
+	std::map<const char*, SoundData*> mSoundResource;
 	//std::map<const char*, Buffer*> m_meshs;
 
 public:
@@ -95,5 +79,5 @@ public:
 	RESOURCEMANAGER_API ModelFileParser* LoadModel(const char* file);
 	RESOURCEMANAGER_API void FreeModelData(ModelFileParser* parser);
 
-	RESOURCEMANAGER_API SoundResource* LoadSound(const char* filepath, void* _fSystem);
+	RESOURCEMANAGER_API std::future<void*> LoadSound(const char* filepath, void* _fSystem);
 };

@@ -199,13 +199,13 @@ void ResourceManager::FreeModelData(ModelFileParser* parser)
 #endif
 }
 
-SoundResource* ResourceManager::LoadSound(const char* filepath, void* _fSystem)
+std::future<void*> ResourceManager::LoadSound(const char* filepath, void* _fSystem)
 {
 #ifdef _CACH_PARSED_DATA_
-	for (std::map<const char*, SoundResource*>::iterator it = mSoundResource.begin(); it != mSoundResource.end(); it++)
+	for (std::map<const char*, SoundData*>::iterator it = mSoundResource.begin(); it != mSoundResource.end(); it++)
 	{
 		if (it->first == filepath)
-			return it->second;
+			return mThreadPool.AddTask<LoadSoundTask>(it->second->buffer, it->second->bufferSize, &mGlLock, _fSystem);
 	}
 #endif
 
@@ -219,12 +219,13 @@ SoundResource* ResourceManager::LoadSound(const char* filepath, void* _fSystem)
 		buffer = new unsigned char[bufferSize];
 		if (mPacaReader.GetResource(filepath, buffer, bufferSize))
 		{
-			SoundResource* soundResource = new SoundResource();
-			soundResource->future = mThreadPool.AddTask<LoadSoundTask>(buffer, bufferSize, &mGlLock, _fSystem);
 #ifdef _CACH_PARSED_DATA_
-			mSoundResource.insert(std::pair<const char*, SoundResource*>(filepath, soundResource));
+			SoundData* sd = new SoundData();
+			sd->buffer = buffer;
+			sd->bufferSize = bufferSize;
+			mSoundResource.insert(std::pair<const char*, SoundData*>(filepath, sd));
 #endif
-			return soundResource;
+			return mThreadPool.AddTask<LoadSoundTask>(buffer, bufferSize, &mGlLock, _fSystem);
 		}
 		break;
 
@@ -239,14 +240,16 @@ SoundResource* ResourceManager::LoadSound(const char* filepath, void* _fSystem)
 
 		zzip_file_close(fp);
 
-		SoundResource* soundResource = new SoundResource();
-		soundResource->future = mThreadPool.AddTask<LoadSoundTask>(buffer, bufferSize, &mGlLock, _fSystem);
 #ifdef _CACH_PARSED_DATA_
-		mSoundResource.insert(std::pair<const char*, SoundResource*>(filepath, soundResource));
+		SoundData* sd = new SoundData();
+		sd->buffer = buffer;
+		sd->bufferSize = bufferSize;
+		mSoundResource.insert(std::pair<const char*, SoundData*>(filepath, sd));
 #endif
-		return soundResource;
+		return mThreadPool.AddTask<LoadSoundTask>(buffer, bufferSize, &mGlLock, _fSystem);
 	}
 }
+
 void ResourceManager::addToMemCount(int bytes)
 {
 	memory += bytes;

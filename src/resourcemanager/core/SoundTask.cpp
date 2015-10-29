@@ -16,7 +16,7 @@ void* LoadSoundTask::operator()(unsigned char* buf, unsigned int bufSize, std::m
 
 	FMOD_RESULT	result = system->createSound((const char*)buf, FMOD_OPENMEMORY, &exinfo, &sound);
 
-	delete buf;
+	//delete buf;
 
 	std::lock_guard<std::mutex> lock(*mutex);
 	GLsync fenceId = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
