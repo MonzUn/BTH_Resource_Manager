@@ -63,7 +63,7 @@ private:
 	//std::map<const char*, Buffer*> m_meshs;
 
 public:
-    RESOURCEMANAGER_API bool StartUp( SDL_Window* window, const std::string& assetFilePath );
+    RESOURCEMANAGER_API bool StartUp( SDL_Window* window, size_t threadCount, const std::string& assetFilePath );
     RESOURCEMANAGER_API void ShutDown();
 
     RESOURCEMANAGER_API TextureResource* LoadTexture( const char* filepath );

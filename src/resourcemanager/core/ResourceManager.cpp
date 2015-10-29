@@ -2,7 +2,7 @@
 #include "../core/TextureTask.h"
 #include <zzip/zzip.h>
 
-bool ResourceManager::StartUp( SDL_Window* window, const std::string& assetFilePath )
+bool ResourceManager::StartUp( SDL_Window* window, size_t threadCount, const std::string& assetFilePath )
 {
 	memory = 0;
 	std::string assetFileExtension = assetFilePath.substr( assetFilePath.find_last_of( '.' ) );
@@ -13,7 +13,7 @@ bool ResourceManager::StartUp( SDL_Window* window, const std::string& assetFileP
 	else
 		return false;
 
-    mThreadPool.Create( 2, window );
+    mThreadPool.Create( threadCount, window );
 
 	switch ( mAssetPacketExtension )
 	{
@@ -64,6 +64,7 @@ TextureResource* ResourceManager::LoadTexture( const char* file)
 
 	unsigned int bufferSize;
 	unsigned char* buffer;
+
 	switch ( mAssetPacketExtension )
 	{
 		case PACA:
@@ -81,7 +82,7 @@ TextureResource* ResourceManager::LoadTexture( const char* file)
 			break;
 
 		case ZIP:
-			ZZIP_FILE* fp = zzip_file_open( mDir, file + 10, 0 );
+			ZZIP_FILE* fp = zzip_file_open( mDir, file, 0 );
 			zzip_seek( fp, 0, SEEK_END );
 			bufferSize = zzip_tell( fp );
 			zzip_rewind( fp );
@@ -132,7 +133,7 @@ ModelFileParser* ResourceManager::LoadModel(const char* file)
 
 		case ZIP:
 		{
-			ZZIP_FILE* fp = zzip_file_open( mDir, file + 10, 0 );
+			ZZIP_FILE* fp = zzip_file_open( mDir, file, 0 );
 			zzip_seek( fp, 0, SEEK_END );
 			bufferSize = zzip_tell( fp );
 			zzip_rewind( fp );

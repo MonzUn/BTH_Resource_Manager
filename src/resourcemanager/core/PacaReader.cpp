@@ -13,24 +13,24 @@ bool PacaReader::Open( const std::string & filePath )
 		{
 			m_OpenFilePath = filePath;
 
-			unsigned int fileSize = FileUtility::GetFileContentSize( m_InStream);
+			uint32_t fileSize = FileUtility::GetFileContentSize( m_InStream);
 
 			// Read object count
-			unsigned int objectCount;
-			m_InStream.read( reinterpret_cast<char*>( &objectCount ), sizeof( unsigned int ) );
+			uint32_t objectCount;
+			m_InStream.read( reinterpret_cast<char*>( &objectCount ), sizeof( uint32_t ) );
 
 			// Read header data
-			unsigned int headerSize = objectCount * sizeof( unsigned int ) * 2; // * 2 since it is both hash and size
+			uint32_t headerSize = objectCount * sizeof( uint32_t ) * 2; // * 2 since it is both hash and size
 			char* headerData = static_cast<char*>( malloc( headerSize ) );
 			m_InStream.read( headerData, headerSize );
 
-			unsigned int nextStartIndex = 0;
+			uint32_t nextStartIndex = 0;
 			for ( int i = 0; i < objectCount; ++i )
 			{
-				unsigned int pathHash, resourceByteSize;
-				pathHash			= *reinterpret_cast<unsigned int*>( headerData + ( sizeof( unsigned int ) * i ) );
-				resourceByteSize	= *reinterpret_cast<unsigned int*>( headerData + ( objectCount * sizeof( unsigned int ) ) + sizeof( unsigned int ) * i );
-				m_HeaderInfo.emplace( pathHash, ResoureMetaData( sizeof( unsigned int ) +  headerSize + nextStartIndex, resourceByteSize ) );
+				uint32_t pathHash, resourceByteSize;
+				pathHash			= *reinterpret_cast<uint32_t*>( headerData + ( sizeof( uint32_t ) * i ) );
+				resourceByteSize	= *reinterpret_cast<uint32_t*>( headerData + ( objectCount * sizeof( uint32_t ) ) + sizeof( uint32_t ) * i );
+				m_HeaderInfo.emplace( pathHash, ResoureMetaData( sizeof( uint32_t ) +  headerSize + nextStartIndex, resourceByteSize ) );
 				nextStartIndex += resourceByteSize;
 			}
 
@@ -61,10 +61,10 @@ std::string PacaReader::GetOpenPath() const
 	return m_OpenFilePath;
 }
 
-unsigned int PacaReader::GetResourceSize( const std::string& resourcePath ) const
+uint32_t PacaReader::GetResourceSize( const std::string& resourcePath ) const
 {
-	unsigned int resourceSize = 0;
-	unsigned int pathHash = HashString( resourcePath );
+	uint32_t resourceSize = 0;
+	uint32_t pathHash = HashString( resourcePath );
 	if ( m_HeaderInfo.find( pathHash ) != m_HeaderInfo.end() )
 	{
 		resourceSize = m_HeaderInfo.at( pathHash ).ByteSize;
@@ -73,10 +73,10 @@ unsigned int PacaReader::GetResourceSize( const std::string& resourcePath ) cons
 	return resourceSize;
 }
 
-bool PacaReader::GetResource( const std::string& resourcePath, void* outBuffer, unsigned int outBufferSize )
+bool PacaReader::GetResource( const std::string& resourcePath, void* outBuffer, uint32_t outBufferSize )
 {
 	bool result = false;
-	unsigned int pathHash = HashString( resourcePath );
+	uint32_t pathHash = HashString( resourcePath );
 	if ( m_HeaderInfo.find( pathHash ) != m_HeaderInfo.end() )
 	{
 		const ResoureMetaData& resourceMetaData = m_HeaderInfo.at( pathHash );
@@ -91,7 +91,7 @@ bool PacaReader::GetResource( const std::string& resourcePath, void* outBuffer, 
 	return result;
 }
 
-unsigned int PacaReader::HashString( const std::string& toHash ) const
+uint32_t PacaReader::HashString( const std::string& toHash ) const
 {
 	std::hash<std::string> hashFunction;
 	return hashFunction( toHash );

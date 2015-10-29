@@ -5,10 +5,10 @@
 
 struct ResoureMetaData
 {
-	ResoureMetaData( unsigned int startIndex, unsigned int byteSize ) : StartIndex( startIndex ), ByteSize( byteSize ) {}
+	ResoureMetaData( uint32_t startIndex, uint32_t byteSize ) : StartIndex( startIndex ), ByteSize( byteSize ) {}
 
-	unsigned int StartIndex;
-	unsigned int ByteSize;
+	uint32_t StartIndex;
+	uint32_t ByteSize;
 };
 
 class PacaReader
@@ -19,13 +19,13 @@ public:
 	bool			IsOpen() const;
 	std::string		GetOpenPath() const;
 
-	unsigned int	GetResourceSize( const std::string& resourcePath ) const;
-	bool			GetResource( const std::string& resourcePath, void* outBuffer, unsigned int outBufferSize );
+	uint32_t	GetResourceSize( const std::string& resourcePath ) const;
+	bool			GetResource( const std::string& resourcePath, void* outBuffer, uint32_t outBufferSize );
 
 private:
-	unsigned int HashString( const std::string& toHash ) const;
+	uint32_t HashString( const std::string& toHash ) const;
 
 	std::string									m_OpenFilePath;
 	std::ifstream								m_InStream;
-	std::map<unsigned int, ResoureMetaData>		m_HeaderInfo;
+	std::map<uint32_t, ResoureMetaData>			m_HeaderInfo;
 };
