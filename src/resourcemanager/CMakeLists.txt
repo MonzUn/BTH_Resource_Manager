@@ -10,7 +10,9 @@ set(RESOURCEMANAGER_LIBRARIES
 	glu32
 	opengl32
 	zdll
-	zzip)
+	zzip
+	fmod
+	fmodL)
 
 # Generate source groups depending on folders (creates Visual Studio filters)
 set(RELPATH ${ProjectRoot}/src/resourcemanager)

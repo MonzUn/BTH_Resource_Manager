@@ -13,7 +13,9 @@ set(LIBRARIES
 	glew32
 	glu32
 	zdll
-	zzip)
+	zzip
+	fmod
+	fmodL)
 
 set(RELPATH "${CMAKE_CURRENT_SOURCE_DIR}/../")
 get_filename_component(RELPATH ${RELPATH} ABSOLUTE)
