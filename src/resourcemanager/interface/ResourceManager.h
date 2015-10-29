@@ -45,4 +45,6 @@ public:
 
 	RESOURCEMANAGER_API ModelFileParser* LoadModel(const char* file);
 	RESOURCEMANAGER_API void FreeModelData(ModelFileParser* parser);
+
+	RESOURCEMANAGER_API std::future<void*> LoadSound(const char* filepath, void* _fSystem);
 };

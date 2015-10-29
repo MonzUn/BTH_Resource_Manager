@@ -1,5 +1,6 @@
 #include "../interface/ResourceManager.h"
 #include "../core/TextureTask.h"
+#include "../core/SoundTask.h"
 #include <zzip/zzip.h>
 
 bool ResourceManager::StartUp( SDL_Window* window, size_t threadCount, const std::string& assetFilePath )
@@ -168,4 +169,35 @@ void ResourceManager::FreeModelData(ModelFileParser* parser)
 #else
 	delete parser;
 #endif
+}
+
+std::future<void*> ResourceManager::LoadSound(const char* filepath, void* _fSystem)
+{
+	unsigned int bufferSize;
+	unsigned char* buffer;
+
+	switch (mAssetPacketExtension)
+	{
+	case PACA:
+		bufferSize = mPacaReader.GetResourceSize(filepath);
+		buffer = new unsigned char[bufferSize];
+		if (mPacaReader.GetResource(filepath, buffer, bufferSize))
+		{
+			return mThreadPool.AddTask<LoadSoundTask>(buffer, bufferSize, &mGlLock, _fSystem);
+		}
+		break;
+
+	case ZIP:
+		ZZIP_FILE* fp = zzip_file_open(mDir, filepath, 0);
+		zzip_seek(fp, 0, SEEK_END);
+		bufferSize = zzip_tell(fp);
+		zzip_rewind(fp);
+
+		buffer = new unsigned char[bufferSize];
+		bufferSize = zzip_file_read(fp, buffer, static_cast<int>(bufferSize));
+
+		zzip_file_close(fp);
+
+		return mThreadPool.AddTask<LoadSoundTask>(buffer, bufferSize, &mGlLock, _fSystem);
+	}
 }
