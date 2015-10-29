@@ -70,7 +70,7 @@ void TestTextureLoading( ResourceManager* resourceManager, const char* filepath,
     {
         std::chrono::steady_clock::time_point start;
         std::chrono::steady_clock::time_point finish;
-        std::future<GLuint> loadFuture;
+		TextureResource* textureResource;
         std::future<void> deleteFuture;
         GLuint texture;
         bool isActive;
@@ -79,7 +79,7 @@ void TestTextureLoading( ResourceManager* resourceManager, const char* filepath,
     for ( int i = 0; i < count; ++i )
     {
         textureFutures[ i ].start = std::chrono::high_resolution_clock::now();
-        textureFutures[ i ].loadFuture = resourceManager->LoadTexture( filepath );
+        textureFutures[ i ].textureResource = resourceManager->LoadTexture(filepath);
         textureFutures[ i ].isActive = true;
     }
 
@@ -89,7 +89,7 @@ void TestTextureLoading( ResourceManager* resourceManager, const char* filepath,
     {
         for ( int i = 0; i < count; ++i )
         {
-            if ( textureFutures[ i ].isActive && textureFutures[ i ].loadFuture._Is_ready() )
+            if ( textureFutures[ i ].isActive && textureFutures[ i ].textureResource->future._Is_ready() )
             {
                 textureFutures[ i ].finish = std::chrono::high_resolution_clock::now();
                 textureFutures[ i ].isActive = false;
@@ -102,7 +102,7 @@ void TestTextureLoading( ResourceManager* resourceManager, const char* filepath,
     long long sum = 0, best = LLONG_MAX, worst = 0;
     for ( int i = 0; i < count; ++i )
     {
-        textureFutures[ i ].texture = textureFutures[ i ].loadFuture.get();
+        textureFutures[ i ].texture = textureFutures[ i ].textureResource->future.get();
         long long duration = std::chrono::duration_cast<std::chrono::milliseconds>( textureFutures[ i ].finish - textureFutures[ i ].start ).count();
         
         sum += duration;
