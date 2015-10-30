@@ -37,6 +37,12 @@ void ResourceManager::ShutDown()
 	{
 		delete it->second;
 	}
+	for (std::map<const char*, SoundData*>::iterator it = mSoundResource.begin(); it != mSoundResource.end(); it++)
+	{
+		delete it->second;
+	}
+	mModelFileParsers.clear();
+	mSoundResource.clear();
 #endif
 
 	switch ( mAssetPacketExtension )
